@@ -12,22 +12,23 @@ fileName = args.fileName
 fileSize = 0
 totalClips = 0
 
-
-print("Specdrum Clip Detector")
-print("m-harrison.org")
+def printWelcome():
+    print("Specdrum Clip Detector")
+    print("m-harrison.org")
 
 def verifyFiles():
     try:
-        file_stats = os.stat(fileName)
-        fileSize = file_stats.st_size
+        fileStats = os.stat(fileName)
+        fileSize = fileStats.st_size
     except FileNotFoundError:
         print("File not found")
         sys.exit()
     if fileSize != 21504:
         print ('File is not a valid SpecDrum audio data block')
-        print (f'File size invalid - {file_stats.st_size} bytes')
+        print (f'File size invalid - {fileStats.st_size} bytes')
         sys.exit()
     else:
+        printWelcome()
         print ('File is valid')
         
 
@@ -73,7 +74,7 @@ def clipDetect(list1, list2, list3, name1, name2, name3):
     for x in range(2048):
         total = list1[x]+list2[x]+list3[x]
         if total >= 128 or total <= -129:
-            print(Fore.RED + 'Clipping at index ' + str(x) +' when adding ' + name1 + ', ' + name2 + ' and ' + name3 + ' ('+ str(total) +')')
+            print(Fore.RED + 'Clip @ ' + str(x) +' when adding ' + name1 + ', ' + name2 + ' and ' + name3 + ' ('+ str(total) +')')
             totalClips += 1
     if clipCount == 0:
         print(Fore.GREEN + 'No clips found between ' + name1 + ', ' + name2 +' and ' + name3)
