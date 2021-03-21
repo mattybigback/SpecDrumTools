@@ -82,7 +82,7 @@ def clipDetect(list1, list2, list3, name1, name2, name3):
 
 if fileName == None:
     print('No input file specified. Please specify a file path using -i.')
-    quit()
+    sys.exit()
 
 verifyFiles()
 assignSamples()
