@@ -6,6 +6,8 @@ SpecDrumClipDetector analyses the audio block and looks for potential clipping i
 
 Run from the command line/terminal, passing the file to be checked as an argument.
 
+Requires NumPy and colorama to run
+
 ## XORFile
 XORFile converts audio blocks to work with the AmDrum software. For some reason the developers XORed the audio with a text string. This script applies that process to SpecDrum audio blocks so they can be imported into AmDrum (you will need to add AMSDOS headers to both the header block and audio block to get them to import correctly).
 
