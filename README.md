@@ -8,3 +8,7 @@ Run from the command line/terminal, passing the file to be checked as an argumen
 
 ## XORFile
 XORFile converts audio blocks to work with the AmDrum software. For some reason the developers XORed the audio with a text string. This script applies that process to SpecDrum audio blocks so they can be imported into AmDrum (you will need to add AMSDOS headers to both the header block and audio block to get them to import correctly).
+
+## tzx-builder
+
+Creates a TZX file that can be loaded into the SpecDrum software
