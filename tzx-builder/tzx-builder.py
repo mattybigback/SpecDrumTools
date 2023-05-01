@@ -11,7 +11,7 @@ tzxheader = b'\x5A\x58\x54\x61\x70\x65\x21\x1A\x01\x0D'
 drum_names = []
 drum_names_data = bytearray()
 audio_block_data = bytearray()
-pause_after_block = 26 #milliseconds pause between blocks
+pause_after_block = 1000 #milliseconds pause between blocks
 
 # Paths
 name_file_path = ''
