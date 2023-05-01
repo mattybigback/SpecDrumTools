@@ -8,7 +8,7 @@ tzxheader = b'\x5A\x58\x54\x61\x70\x65\x21\x1A\x01\x0D'
 drum_names = []
 drum_names_data = bytearray()
 audio_block_data = bytearray()
-pause_after_block = 26
+pause_after_block = 26 #milliseconds pause between blocks
 
 # Paths
 name_file_path = ''
@@ -63,10 +63,12 @@ def format_drum_names(name):
     return name
 
 def calculate_length(block):
+    print("Calculating block length")
     return(len(block))
 
 def calculate_checksum(block):
     checksum = 0
+    print("Calculating block checksum")
     for i in block:
         checksum ^= i
     return checksum
@@ -75,7 +77,8 @@ def calculate_checksum(block):
 printWelcome()
 verifyFiles(name_file_path)
 verifyFiles(audio_block_path, "audio")
-
+# Creating names block
+print("Creating names block")
 # Read first 8 lines of drum names file
 
 with open(name_file_path, 'r') as file:
@@ -91,16 +94,25 @@ drum_names_data.append(calculate_checksum(drum_names_data))
 drum_names_header = struct.pack('<Bhh', 0x10, pause_after_block, calculate_length(drum_names_data))
 
 # Create audio block
-
+print("Creating audio block")
 audio_block_data.insert(0, 0xFF)
 with open(audio_block_path, 'rb') as file:  
     audio_block_data.extend(file.read())
 audio_block_data.append(calculate_checksum(audio_block_data))
 audio_block_header = struct.pack('<Bhh', 0x10, pause_after_block, calculate_length(audio_block_data))
 
-with open(output_file_name, 'wb') as file:
-    file.write(tzxheader)
-    file.write(drum_names_header)
-    file.write(drum_names_data)
-    file.write(audio_block_header)
-    file.write(audio_block_data)
+try:
+    with open(output_file_name, 'wb') as file:
+        print("Writing TZX header")
+        file.write(tzxheader)
+        print("Writing names block header")
+        file.write(drum_names_header)
+        print("Writing names block data")
+        file.write(drum_names_data)
+        print("Writing audio block header")
+        file.write(audio_block_header)
+        print("Writing audio block data")
+        file.write(audio_block_data)
+        print("TZX file successfully written to {}".format(output_file_name))
+except:
+    print("Output file {} could not be written. Check that it is not read only and that you have the neccesary file/folder permissions".format(output_file_name))
