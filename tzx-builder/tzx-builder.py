@@ -63,9 +63,9 @@ def verifyFiles(file, type=None):
 def format_drum_names(name, idx):
     idx=idx+1
     name = name.strip()
-    if re.search('[^0-9a-zA-Z]+',name):
+    if re.search('[^0-9a-zA-Z ]+',name):
         print("{}Special characters were found on line {} of name file ({}) and will be removed{}".format(Fore.YELLOW, idx, name, Style.RESET_ALL))
-        name = re.sub('[^0-9a-zA-Z]+', '', name)
+        name = re.sub('[^0-9a-zA-Z ]+', '', name)
     name = name[:7]
     name = name.ljust(7)
     name = name.upper()
@@ -158,7 +158,6 @@ for i in drum_names:
     drum_names_data.extend(i.encode('UTF-8'))
 drum_names_data.append(calculate_checksum(drum_names_data))
 drum_names_header = struct.pack('<Bhh', 0x10, pause_after_block, calculate_length(drum_names_data))
-
 assignSamples()
 
 clipDetect(group1Sample1, group2Sample1, group3Sample1, drum_names[0].strip(), drum_names[1].strip(), drum_names[4].strip())
