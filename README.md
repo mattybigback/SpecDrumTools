@@ -1,4 +1,4 @@
-# SpecDrumTools
+# SpecDrum Tools
 Tools for making custom kits for the Cheetah SpecDrum
 
 ## tzx-builder
