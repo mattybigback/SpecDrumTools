@@ -134,10 +134,10 @@ def clipDetect(list1, list2, list3, name1, name2, name3):
     for x in range(3072):
         total = list1[x]+list2[x]+list3[x]
         if total >= 128 or total <= -129:
-            print(Fore.RED + 'Clip @ ' + str(x) +' when adding ' + name1 + ', ' + name2 + ' and ' + name3 + ' ('+ str(total) +')')
+            print("{}Clip @ sample {} when summing {}, {} and {} ({}){}".format(Fore.RED, x, name1, name2, name3, total, Style.RESET_ALL))
             totalClips += 1
     if clipCount == 0:
-        print(Fore.GREEN + 'No clips found between ' + name1 + ', ' + name2 +' and ' + name3)
+        print("{}No clips found when summing {}, {} and {}{}".format(Fore.GREEN, name1, name2, name3, Style.RESET_ALL))
     totalClips += clipCount
 
 printWelcome()
