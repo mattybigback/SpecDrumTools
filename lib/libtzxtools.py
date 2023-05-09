@@ -38,7 +38,6 @@ def verify_file(file, file_type="names"):
     print("{} file \"{}\" exists and is valid".format(file_type.title(), file))
 
 def format_drum_names(name, idx):
-    idx=idx+1
     name = name.strip()
     if re.search('[^0-9a-zA-Z ]+',name):
         print("{}Special characters were found on line {} of name file ({}) and will be removed{}".format(Fore.YELLOW, idx, name, Style.RESET_ALL))
@@ -89,8 +88,8 @@ def detect_clips(list1, list2, list3, name1, name2, name3):
     for sample in range(3072):
         total = to_signed_int8(lists[0][sample])+to_signed_int8(lists[1][sample])+to_signed_int8(lists[2][sample])
         if total >= 128 or total <= -129:
-            print("{}Clip @ sample {} when summing {}, {} and {} ({}){}".format(Fore.RED, sample, name1, name2, name3, total, Style.RESET_ALL))
+            print("{}Clip @ sample {} when summing {}, {} and {} ({}){}".format(Fore.RED, sample, name1.strip(), name2.strip(), name3.strip(), total, Style.RESET_ALL))
             clip_count += 1
     if clip_count == 0:
-        print("{}No clips found when summing {}, {} and {}{}".format(Fore.GREEN, name1, name2, name3, Style.RESET_ALL))
+        print("{}No clips found when summing {}, {} and {}{}".format(Fore.GREEN, name1.strip(), name2.strip(), name3.strip(), Style.RESET_ALL))
     return clip_count

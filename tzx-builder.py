@@ -10,6 +10,7 @@ drum_names = []
 drum_names_data = bytearray()
 audio_block_data = bytearray()
 pause_after_block = 1000 #milliseconds pause between blocks
+clip_count = 0
 
 # Audio Sample Storage
 group1Sample1 = bytearray()
@@ -20,7 +21,14 @@ group3Sample1 = bytearray()
 group3Sample2 = bytearray()
 group3Sample3 = bytearray()
 group3Sample4 = bytearray()
-group_samples = [[group2Sample1, 3072], [group2Sample2, 3072],[group2Sample3, 3072], [group3Sample1, 2048], [group3Sample2, 2048], [group3Sample3,3072], [group3Sample4, 3072], [group1Sample1, 2048]]
+group_samples = [[group2Sample1, 3072],
+                 [group2Sample2, 3072],
+                 [group2Sample3, 3072],
+                 [group3Sample1, 2048], 
+                 [group3Sample2, 2048], 
+                 [group3Sample3,3072], 
+                 [group3Sample4, 3072], 
+                 [group1Sample1, 2048]]
 
 # Paths
 name_file_path = ''
@@ -47,23 +55,26 @@ print("Creating names block")
 
 #Read first 8 lines of drum names file
 with open(name_file_path, 'r', encoding='UTF-8') as file:
-    drum_names = [next(file) for x in range(8)]
+    first_line = file.readline()
+    for idx_record, record in enumerate(group_samples):
+        if idx_record < 7:
+            group_samples[idx_record].insert(2, tzx.format_drum_names(file.readline(), idx_record+1))
+    group_samples[7].insert(2,tzx.format_drum_names(first_line, 1))
 
 #Format Drum Names
-drum_names = [tzx.format_drum_names(drum, idx) for idx, drum in enumerate(drum_names)]
 drum_names_data.insert(0, 0x00)
 drum_names_data.extend('c'.encode('UTF-8'))
-for i in drum_names:
-    drum_names_data.extend(i.encode('UTF-8'))
+drum_names_data.extend(group_samples[7][2].encode('UTF-8'))
+for idx_names, names in enumerate(group_samples):
+    if idx_names < 7:
+        drum_names_data.extend(names[2].encode('UTF-8'))
 drum_names_data.append(tzx.calculate_checksum(drum_names_data))
 drum_names_header = struct.pack('<Bhh', 0x10, pause_after_block, tzx.calculate_length(drum_names_data))
 group_samples = tzx.assign_samples(audio_block_path, group_samples)
 
 for sample1 in group_samples[0:3]:
-    for sample2 in group_samples[4:7]:
-        for i, drum_name in enumerate(drum_names[1:4]):
-            clip_count = 0
-            clip_count += tzx.detect_clips(group_samples[7][0], sample1[0], sample2[0], drum_names[0].strip(), drum_name.strip(), drum_names[i+4].strip())
+    for sample2 in group_samples[3:7]:
+        clip_count += tzx.detect_clips(group_samples[7][0], sample1[0], sample2[0], group_samples[7][2], sample1[2], sample2[2])
 print("{} clips found".format(clip_count))
 
 # Create audio block
