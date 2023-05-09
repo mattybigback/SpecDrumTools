@@ -3,12 +3,14 @@ Tools for making custom kits for the Cheetah SpecDrum
 
 ## tzx-builder
 
-Creates a TZX file that can be loaded into the SpecDrum software. This release incorporates the clip detector code, so there is no need to download it separately.
+Creates a TZX file that can be loaded into the SpecDrum software. This release incorporates the clip detector code, so there is no need to run it separately.
 
 ### Usage
 ```
- tzx-builder.exe  name_file audio_file [-o OUTPUT_FILE]
+ tzx-builder  name_file audio_file [-o OUTPUT_FILE]
 ```
+If no output file name is specified then the output is saved in the working directory as "kit.tzx"
+
 #### Name File
 Text file, with one line for each drum name. All drum names will be capitalised and padded to the correct length, and all non-alphanumeric character will be removed.
 
