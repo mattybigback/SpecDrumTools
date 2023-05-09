@@ -1,35 +1,41 @@
+"""Functions required for creating SpecDrum tzx files"""
 import os
 import sys
 import re
 from colorama import Fore, Style
 
-def printWelcome(program_name):
+def print_welcome(program_name):
+    """Prints the name of the program and my website"""
     print(program_name)
     print("mjharrison.co.uk")
 
-def verifyFiles(file, type=None):
-    if type != "audio":
-        type = "names"
+def verify_file(file, file_type="names"):
+    """
+    Verifies the existence and contents of incoming files. 
+    Text files are inspected to make sure they have enough lines and are not too big. 
+    Audio files are checked to see if they are the correct length
+    
+    """
     try:
-        fileStats = os.stat(file)
-        fileSize = fileStats.st_size
+        file_stat = os.stat(file)
+        file_size = file_stat.st_size
     except FileNotFoundError:
         print("File \"" + file + "\" not found")
         sys.exit()
-    if fileSize != 21504 and type == "audio":
+    if file_size != 21504 and file_type == "audio":
         print ('File is not a valid SpecDrum audio data block')
-        print (f'File size invalid - {fileStats.st_size} bytes')
+        print (f'File size invalid - {file_stat.st_size} bytes')
         sys.exit()
-    if type == "names":
-        with open(file, 'r') as input_file:
+    if file_type == "names":
+        with open(file, 'r', encoding='UTF-8') as input_file:
             file_number_of_lines = len(input_file.readlines())
         if file_number_of_lines < 8:
-            print("{}{} file \"{}\" invalid - not enough lines: ({}/8){}".format(Fore.RED,type.title(), file, file_number_of_lines, Style.RESET_ALL))
+            print("{}{} file \"{}\" invalid - not enough lines: ({}/8){}".format(Fore.RED,file_type.title(), file, file_number_of_lines, Style.RESET_ALL))
             sys.exit()
-        if fileSize > 100:
-            print("{}{} file \"{}\" invalid - too large. {}".format(Fore.RED, type.title(), file, Style.RESET_ALL))
+        if file_size > 100:
+            print("{}{} file \"{}\" invalid - too large. {}".format(Fore.RED, file_type.title(), file, Style.RESET_ALL))
             sys.exit()
-    print("{} file \"{}\" exists and is valid".format(type.title(), file))
+    print("{} file \"{}\" exists and is valid".format(file_type.title(), file))
 
 def format_drum_names(name, idx):
     idx=idx+1
@@ -62,23 +68,29 @@ def to_signed_int8(n):
     n = n & 0xff
     return n | (-(n & 0x80))
 
-def clipDetect(list1, list2, list3, name1, name2, name3):
+def assign_samples(audio_block_path, group_samples):
+    with open(audio_block_path, "rb") as block_file:
+        for sample_block in group_samples:
+            sample_block[0] = bytearray(block_file.read(sample_block[1]))
+        return group_samples
+
+def detect_clips(list1, list2, list3, name1, name2, name3):
     lists = []
     lists.append(list1.copy())
     lists.append(list2.copy())
     lists.append(list3.copy())
     padding = bytearray(1024)
-    clipCount = 0
+    clip_count = 0
     for i in lists:
         if len(i) < 3072:
             i.extend(padding)
 
     #convert the lists to use 16 bit ints so that we can see if they exceed the values of 8 bit ints
-    for x in range(3072):
-        total = to_signed_int8(lists[0][x])+to_signed_int8(lists[1][x])+to_signed_int8(lists[2][x])
+    for sample in range(3072):
+        total = to_signed_int8(lists[0][sample])+to_signed_int8(lists[1][sample])+to_signed_int8(lists[2][sample])
         if total >= 128 or total <= -129:
-            print("{}Clip @ sample {} when summing {}, {} and {} ({}){}".format(Fore.RED, x, name1, name2, name3, total, Style.RESET_ALL))
-            clipCount += 1
-    if clipCount == 0:
+            print("{}Clip @ sample {} when summing {}, {} and {} ({}){}".format(Fore.RED, sample, name1, name2, name3, total, Style.RESET_ALL))
+            clip_count += 1
+    if clip_count == 0:
         print("{}No clips found when summing {}, {} and {}{}".format(Fore.GREEN, name1, name2, name3, Style.RESET_ALL))
-    return clipCount
+    return clip_count
